@@ -1,0 +1,42 @@
+Steps to use Ansible to connect to Checkpoint servers.
+1)Create 3 or 4 virtual machines in VM Ware. Prefer Centos.
+2)Make a Internal connection between them and try to ping to check the connection status among them.
+3)Then make superuser in all the nodes and download Ansible using apt codes.
+4)We then make a ssh connection among all the nodes so ansible communication is possible.
+5)The next step is to replace contollable nodes with CentOS servers.
+6)Then after succesful command using with the server replace them with the Checkpoint Servers.
+
+We need to establish connection between the three nodes by making the NAT network among each node and host network.
+1. This will let us use the internet connection used by the host to VM'S.
+2. Initially we have single adaptor using NAT for each node.
+3. Then in the Global tools we enable the new adaptor mode.
+4. Then we look through the Ip address in it.
+5. We can connect the guest device to our host devices directly if they are same operating system.
+6. But if they are different we use applications like putty in windows.
+7. The connection between host and guest is preffered to be ssh.
+
+To enable root user or Superuser in centos:
+We get an option during preinstallation to set the root password.
+But if it is not done, we can change it later.
+$ sudo passwd root
+[sudo] password for ramesh:
+Enter new UNIX password:
+Retype new UNIX password:
+passwd: password updated successfully
+
+We use yum repositories in centos and Red hat Enterprises Linux(RHEL).
+There are several codes we use to install and uptade in CentOS. To do so we use the following codes.
+
+The unique problem is there is a chance that the system doesn't allow the Nat network in your system.
+For this we can change it to bridge network in the system setting or in Vm ware.
+Then we can assign the ip according to the system ip network so the virtual machine is in same network.
+Then it is possible for us to connect to the internet.
+
+The ip address to the host system venkat is 192.168.2.58. The network name is ens33.
+This network provides us the internet the host uses.
+ 
+To understand how the network types work in Vm Ware there is link:
+https://pubs.vmware.com/workstation-9/index.jsp?topic=%2Fcom.vmware.ws.using.doc%2FGUID-3B504F2F-7A0B-415F-AE01-62363A95D052.html
+
+Now by using NAT and bridge type connection we can use network shared by the host machine.
+Unlike Virtualbox application where the internet is available in Nat only.

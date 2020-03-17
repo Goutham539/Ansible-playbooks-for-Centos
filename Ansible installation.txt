@@ -1,0 +1,81 @@
+-----------***********  Ansible ***********----------------
+
+Before starting installation of ansible we first try to make another centOS system.
+This can be simply done by cloning of our old centOS system.
+The centOS is updated by yum commands as Red hat Linux has yum repositories.
+The command to update the system is simply: yum update
+
+Let us have a server and two nodes.
+The Ip of server is: 192.168.0.3
+The Ip of node-1 is: 192.168.0.157
+The Ip of node2  is: 192.168.0.142
+
+Then we need to add following repositories and dependency packages.The list of packages are:
+
+-Epel repository     - yum install epel-release
+-update 	     - yum update
+-Dependency packages - yum install git python python-devel python-pip openssl ansible
+(These dependency packages help us with resources required to operate ansible.)
+
+Then we find the ansible version by using command:  ansible --version
+We open the ansible directory by using cd command.
+This is done by cd /etc/ansible
+Out of the files present in them we open ansible.cfg to edit the text by command:
+- vi.ansible.cfg
+This file is now editable as vi command is editor command.
+We can also use nano editor as per our convinience.
+
+Each editor has it's own commands to overwrite and save.
+The commands are:
+  Work		   vi		    nano
+1.edit		i(if needed)	 not needed
+2.save		:wq(w-write,     ctrl+o(overwite the content)
+and exit         q-quit)	 ctrl+x(Exit)
+
+We now open ansible.cfg folder and remove (#)before words inventory and sudo user.
+This will let us use both by removing the from comment position.
+
+We now make the node or server divsion and assign them in a file name hosts in same directory.
+
+This is done as follows:
+[root@localhost ansible]# vi hosts
+In the page at bottom we add a group as we require the name and write below the IP addresses of required hosts.
+e.g. [test]
+     192.168.2.60
+     192.168.2.61
+
+Similarly if we need more groups and nodes under control we make group similarly.
+
+We now create a user in all of the nodes with ansible name since the data protocol in Ansible is ssh protocol.
+Then we make a password less authentication so to reduce burden of inserting ssh key whenever required.
+Now we can add user as below:
+# useradd ansible
+This can be checked by command:
+# cat /etc/passwd
+We can use this command to see all users.
+If in case we want to delete the user we use command # userdel <name>
+
+Now we will assign a password to ansible user made by #passwd ansible
+password is :  Goutham@123
+
+Now to let the ansible has the all the permissions like that of root and more we make change in file sudo.
+#visudo
+Then below root we write as follows:
+root 	ALL=(ALL) 	ALL
+ansible ALL=(ALL)	NOPASSWD: ALL
+NOPASSWD allow us to make change in nodes without giving passwords of the nodes and relive us of verfication.
+Then in all the nodes we add the ansible user and grant access.
+we can switch users by command #su - ansible(other username)
+
+In the next step we establish a passwordless authentication.To achieve this we need to generate the ssh key.
+The command is : $ ssh-keygen.
+The private key is saved into directory of host. This will let us login into host without using password.
+By using the command we generate a key and save it in directory with name (.ssh).
+Then we copy these keys into other nodes by command. It is: $ ssh-copy-id ansible@192.168.2.60 & 61.
+
+Now we can succesfully login into other nodes easily by a single command and without password.
+The command will be ssh 192.168.2.60 & so on.
+Even we will be able to access files in other nodes from the host network by using ansible.
+e.g.  $ ansible test -a "ls -l /opt" 
+
+To ping into all the Connected devices, we use command:  $ ansible all -m ping

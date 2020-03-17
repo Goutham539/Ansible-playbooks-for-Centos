@@ -1,0 +1,84 @@
+----------------------Ansible Playbooks---------------
+
+Playbooks are a way to do the automation in scripted way. Instead of using individual Ad-hoc commands,
+we can use playbooks written in Yaml format.
+Each playbook contain plays and each play contains the tasks in form of modules. Each module has specific command or task to be carried.
+
+Creating a playbook:
+[root@localhost ~]# vi install.yml
+We are using vi editor and a name install to indicate the file uniquely. The extension .yml helps us to identify playbook.
+
+The start consists of three dashes(---)., This is to allow playbook to divide multiple document.
+Since yaml file allows multiple docs we can divide each doc with three dashes to declare in each doc.
+yaml code is sensitive in spaces.
+
+The doc when edited can be written as follows:
+=======================================================================================================
+---
+- hosts: test				----->test is name of my host group
+  tasks: 				-----> Now we can define variables,tasks,notify,handlers etc.
+  - name: Install a httpd pkg
+    yum: name=httpd state=latest
+  - name: Start a httpd service
+    service: name=httpd state=restarted
+=======================================================================================================
+
+We can find in host if the httpd is installed and started or not.
+# rpm -q httpd					---> Used to know if installed.
+#systemctl status httpd				---> Used to know if service is started or not.
+After we are sure there's no such service install httpd.
+-------------------------------------------------------------------------------------------------------
+[root@localhost ~]# ansible-playbook uninstall.yml --syntax-check	---------------***(1)
+ERROR! this task 'yum' has extra params, which is only allowed in the following modules: command, win_command, shell, win_shell, script, include, include_vars, include_tasks, include_role, import_tasks, import_role, add_host, group_by, set_fact, raw, meta
+
+The error appears to have been in '/root/uninstall.yml': line 4, column 5, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+  tasks:
+  - name: Uninstall the httpd package
+    ^ here
+[root@localhost ~]# ansible-playbook install.yml --syntax-check    
+
+playbook: install.yml
+[root@localhost ~]# ansible-playbook install.yml		------------------(3)
+[DEPRECATION WARNING]: DEFAULT_SUDO_USER option, In favor of Ansible Become, which is
+a generic framework. See become_user. , use become instead. This feature will be
+removed in version 2.8. Deprecation warnings can be disabled by setting
+deprecation_warnings=False in ansible.cfg.
+
+PLAY [test] ***************************************************************************
+
+TASK [Gathering Facts] ****************************************************************
+ok: [192.168.2.66]
+ok: [192.168.2.60]
+
+TASK [Install a httpd pkg] ************************************************************
+changed: [192.168.2.60]
+changed: [192.168.2.66]
+
+TASK [Start a httpd service] **********************************************************
+changed: [192.168.2.66]
+changed: [192.168.2.60]
+
+PLAY RECAP ****************************************************************************
+192.168.2.60               : ok=3    changed=2    unreachable=0    failed=0
+192.168.2.66               : ok=3    changed=2    unreachable=0    failed=0
+
+----------------------------------------------------------------------------------------------------
+This shows us that the syntax is been checked initially and run by using respective commands.
+If there is any syntax error, we get the warning as in step(1).
+
+If we wnat to see the effected pats due to our playbook we use following code:
+=================================================================================================
+[root@localhost ~]# ansible-playbook install.yml --list-hosts
+
+playbook: install.yml
+
+  play #1 (test): test  TAGS: []
+    pattern: [u'test']
+    hosts (2):
+      192.168.2.60
+      192.168.2.66
+[root@localhost ~]#

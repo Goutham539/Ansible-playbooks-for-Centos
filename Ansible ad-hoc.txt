@@ -1,0 +1,47 @@
+-----------------------  Ad-hoc commands in Ansible  ----------------------
+Ad-hoc commands are simple and single line commands used for specific simple purposes in Linux.
+We can perform only simple tasks using Adhoc commands.
+Complex and long processing may require playbook and inventory management.
+Even though these commands are used only in the user with permission and ansible access.
+Some of the adhoc commands are:
+---> $ ansible test -m ping 
+---> $ ansible test -a uptime
+	It is used to return the values of uptime in the nodes mentioned in host directory.
+---> $ ansible test -a "uname -a"
+	It is used to show all information about group devices(nodes).
+---> $ ansible test -a "ls -l /opt"
+	It is used to view the files in the inventory mentioned in inverted commas in node machines.
+---> # ansible all -a "yum -y install <package>"	_-_-_-_-_-_-*******(1)
+	This command allows you to send the instruction individually to all the nodes in the list.
+To check if the package is installed or not use the code: #rpm -q <package>
+---> # ansible all -a "yum -y remove <package>"
+
+We can even create or delete a user in nodes connected by ansible. This is done by:
+---> [root@localhost ~] # ansible all -m user -a "name=<required name> password=<required password>"
+
+
+//**One of the problem we face is at install command. 
+If we use any user as ansible, User package installation is not possible.
+For this kind of Ad-hoc commands we generally use root as ansible user.
+This can be done by sending ssh keys to the root instead of other user. Code for this is:
+[root@localhost ~] # ssh-copy-id root@192.168.2.60 & 66
+
+We use the code --> # ansible-doc <e.g:yum>
+This can be used to know information about the object.
+e.g: --> # ansible-doc -l |more
+	This command gives us all the available modules in the present condition in system.
+ 	 # ansible-doc -l |more |wc -l
+	By this we can know number of modules present in the system. I have 1652 modules.
+	 # ansible-doc yum
+	This command help us to know details of module yum. So if we are using yum as module,
+	name is mandatory as it is shown by (=) in description.
+In this we can observe 
+
+In the code -1 we have used attribute(-a) to install the reuired package. We can also use modules here.
+This is done by:
+--->  [root@localhost ~] # ansible all -m yum -a "name=<package> state=present"
+e.g: --->[root@localhost ~] # ansible test -m yum -a "name=httpd state=present" _-_-_-_-_-_-**(2)
+e.g: --->[root@localhost ~] # ansible test -m yum -a "name=httpd state=absent"
+  By using this code i am installing/removing package httpd into all nodes grouped under list-"test".
+Thus the code 1 and 2 result in helping us understand basi concept of playbooks.
+Now we use the type-2 to write the playbooks.
